@@ -1,14 +1,14 @@
-cmake_minimum_required(VERSION 3.15...3.31)
+cmake_minimum_required(VERSION 3.31)
 
 project(Lab1 VERSION 1.0
  DESCRIPTION "Subject: Design patterns. First laboratory work."
  LANGUAGES CXX)
  
-file(GLOB SOURCES "src/*.cpp")
-file(GLOB_RECURSE HEADERS "include/*.hpp")
+file(GLOB SRCS "src/*.cpp")
+file(GLOB_RECURSE HDRS "include/*.hpp")
  
 add_executable(Lab1
- ${SOURCES}
- ${HEADERS})
+ ${SRCS}
+ ${HDRS})
 
-target_include_directories(Lab1 PUBLIC "include/")
+target_include_directories(Lab1 PRIVATE "include/")
