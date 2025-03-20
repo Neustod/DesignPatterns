@@ -1,9 +1,9 @@
-#include "Lab2/EulerMazeBuilder.hpp"
+#include "Lab2/RawMaze.hpp"
 #include "Lab2/Randomizer.hpp"
-#include <cstdlib>
+#include <cstdio>
 
 
-void EulerMazeBuilder::setSetIndexes(const std::vector<Cell>* previous_field, std::vector<Cell>& horizontal_field)
+void RawMaze::setSetIndexes(const std::vector<Cell>* previous_field, std::vector<Cell>& horizontal_field)
 {
     if (previous_field == nullptr)
     {
@@ -38,7 +38,7 @@ void EulerMazeBuilder::setSetIndexes(const std::vector<Cell>* previous_field, st
     }
 }
 
-void EulerMazeBuilder::setVerticalWalls(std::vector<Cell>& horizontal_field)
+void RawMaze::setVerticalWalls(std::vector<Cell>& horizontal_field)
 {
     const auto& rander = Randomizer::getInstance();
     size_t field_size = horizontal_field.size();
@@ -88,8 +88,8 @@ void EulerMazeBuilder::setVerticalWalls(std::vector<Cell>& horizontal_field)
 
 }
 
-void EulerMazeBuilder::setHorizontalWalls(const std::vector<Cell>* previous_field, std::vector<Cell>& horizontal_field,
-                                              const std::vector<Cell>* next_field
+void RawMaze::setHorizontalWalls(const std::vector<Cell>* previous_field, std::vector<Cell>& horizontal_field,
+                                          const std::vector<Cell>* next_field
 )
 {
     const auto& rander = Randomizer::getInstance();
@@ -141,24 +141,25 @@ void EulerMazeBuilder::setHorizontalWalls(const std::vector<Cell>* previous_fiel
     }
 }
 
-void EulerMazeBuilder::build(std::vector<std::vector<Cell>>& field)
+
+void RawMaze::fill()
 {
-    if (field.empty() || field.size() == 1) return;
+    if (_field.empty() || _field.size() == 1) return;
 
-    setSetIndexes(nullptr, field[0]);
-    setVerticalWalls(field[0]);
-    setHorizontalWalls(nullptr, field[0], &field[1]);
+    setSetIndexes(nullptr, _field[0]);
+    setVerticalWalls(_field[0]);
+    setHorizontalWalls(nullptr, _field[0], &_field[1]);
 
-    for (size_t row = 1; row < field.size() - 1; row++)
+    for (size_t row = 1; row < _field.size() - 1; row++)
     {
-        setSetIndexes(&field[row - 1], field[row]);
-        setVerticalWalls(field[row]);
-        setHorizontalWalls(&field[row - 1], field[row] , &field[row + 1]);
+        setSetIndexes(&_field[row - 1], _field[row]);
+        setVerticalWalls(_field[row]);
+        setHorizontalWalls(&_field[row - 1], _field[row] , &_field[row + 1]);
     }
 
-    setSetIndexes(&field[field.size() - 2], field[field.size() - 1]);
+    setSetIndexes(&_field[_field.size() - 2], _field[_field.size() - 1]);
 
-    auto& horizontal_field = field[field.size() - 1];
+    auto& horizontal_field = _field[_field.size() - 1];
 
     horizontal_field[0].left = Cell::Wall::CONCRETE;
     for (size_t col = 1; col < horizontal_field.size() - 1; col++)
@@ -173,6 +174,33 @@ void EulerMazeBuilder::build(std::vector<std::vector<Cell>>& field)
     horizontal_field[horizontal_field.size() - 1].left = Cell::Wall::RELATED;
     horizontal_field[horizontal_field.size() - 1].right = Cell::Wall::CONCRETE;
 
-    setHorizontalWalls(&field[field.size() - 2], field[field.size() - 1], nullptr);
+    setHorizontalWalls(&_field[_field.size() - 2], _field[_field.size() - 1], nullptr);
 }
 
+
+void RawMaze::print()
+{
+    printf("#");
+    for (size_t col = 0; col < _field[0].size(); col++)
+    {
+        printf(_field[0][col].top == Cell::Wall::CONCRETE ? "#" : " ");
+        printf("#");
+    }
+
+    for (size_t row = 0; row < _field.size(); row++)
+    {
+        printf(_field[row][0].left == Cell::Wall::CONCRETE ? "\n#" : "\n ");
+        for (size_t col = 0; col < _field[row].size(); col++)
+        {
+            printf(" ");
+            printf(_field[row][col].right == Cell::Wall::CONCRETE ? "#" : " ");
+        }
+
+        printf("\n#");
+        for (size_t col = 0; col < _field[row].size(); col++)
+        {
+            printf(_field[row][col].bottom == Cell::Wall::CONCRETE ? "#" : " ");
+            printf("#");
+        }
+    }
+}

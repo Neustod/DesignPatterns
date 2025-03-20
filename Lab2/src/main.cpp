@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "Lab2/RectangleFieldFabric.hpp"
 #include "Lab2/EulerMazeBuilder.hpp"
+#include "Lab2/RawMaze.hpp"
 
 
 int main(int argc, char* argv[])
@@ -23,10 +24,14 @@ int main(int argc, char* argv[])
 
 	if (maze_size < 3) maze_size = 3;
 
-	Maze& maze = fabric.create(maze_size);
-	maze.fill(builder);
+	RawMaze raw_maze(maze_size);
+	raw_maze.fill();
+	raw_maze.print();
 
-	maze.print();
+	//Maze& maze = fabric.create(maze_size);
+	//maze.fill(builder);
+
+	//maze.print();
 	printf("\n");
 
 	return 0;
